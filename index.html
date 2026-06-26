@@ -406,29 +406,61 @@ header.nav.scrolled {
 
 /* Hero trace terminal */
 .trace {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  position: relative;
+  background: rgba(20, 22, 28, 0.72);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+          backdrop-filter: blur(22px) saturate(150%);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 13px;
   overflow: hidden;
   font-family: var(--font-mono);
   font-size: 0.8125rem;
-  box-shadow: 0 24px 60px -30px rgba(0,0,0,0.8);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.07) inset,
+    0 40px 80px -28px rgba(0,0,0,0.78),
+    0 14px 30px -14px rgba(0,0,0,0.6);
+}
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .trace { background: var(--surface); }
+}
+/* faint top sheen, like a glass window edge */
+.trace::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(120% 60% at 50% -10%, rgba(255,255,255,0.06), transparent 60%);
 }
 .trace-bar {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: var(--s2);
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border);
-  color: var(--muted);
+  justify-content: center;
+  height: 42px;
+  padding: 0 16px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.012));
+  border-bottom: 1px solid rgba(255,255,255,0.07);
 }
-.trace-bar .dots { display: flex; gap: 6px; margin-right: var(--s2); }
-.trace-bar .dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--faint); display: block; }
-.trace-bar .title { font-size: 0.75rem; letter-spacing: 0.04em; }
+.trace-bar .dots { position: absolute; left: 15px; display: flex; gap: 8px; }
+.trace-bar .dots i {
+  width: 12px; height: 12px; border-radius: 50%; display: block;
+  box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.22), inset 0 1px 1.5px rgba(255,255,255,0.32);
+}
+.trace-bar .dots i:nth-child(1) { background: #FF5F57; }
+.trace-bar .dots i:nth-child(2) { background: #FEBC2E; }
+.trace-bar .dots i:nth-child(3) { background: #28C840; }
+.trace-bar .title {
+  font-size: 0.75rem;
+  letter-spacing: 0.01em;
+  color: var(--text-2);
+  font-weight: 500;
+}
 .trace-body {
-  padding: 16px;
-  min-height: 232px;
-  line-height: 1.9;
+  position: relative;
+  padding: 18px 18px 20px;
+  min-height: 238px;
+  line-height: 1.95;
 }
 .trace-line { white-space: pre-wrap; color: var(--text-2); }
 .trace-line .ar { color: var(--accent); }
@@ -1257,7 +1289,7 @@ footer.foot {
 <!-- ============================ FOOTER ============================ -->
 <footer class="foot">
   <div class="foot-inner">
-    <span>© 2026 Mridul Chaudhary · Designed &amp; built from scratch</span>
+    <span>© 2026 Mridul Chaudhary</span>
     <div class="socials">
       <a href="https://github.com/mridulchdry17" target="_blank" rel="noopener">GitHub</a>
       <a href="https://x.com/Mridulchdry" target="_blank" rel="noopener">X</a>
