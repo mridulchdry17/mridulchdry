@@ -938,7 +938,7 @@ footer.foot {
       <div class="trace reveal" aria-hidden="true">
         <div class="trace-bar">
           <span class="dots"><i></i><i></i><i></i></span>
-          <span class="title">weatherman · agent run</span>
+          <span class="title" id="traceTitle">revops-intel · agent run</span>
         </div>
         <div class="trace-body" id="trace"></div>
       </div>
@@ -1403,51 +1403,95 @@ footer.foot {
     }
   });
 
-  /* ---------- Hero trace typing ---------- */
+  /* ---------- Hero trace typing (cycles across project domains) ---------- */
   var trace = document.getElementById("trace");
-  var lines = [
-    { html: '<span class="dim">$</span> <span class="kw">weatherman</span> run --account ACME', d: 320 },
-    { html: '<span class="ar">→</span> ingest.sources(<span class="dim">salesforce, looker, slack</span>)', d: 380 },
-    { html: '<span class="ar">→</span> planner.invoke(<span class="dim">risk_analysis</span>)', d: 420 },
-    { html: '<span class="ar">→</span> tool: <span class="kw">retrieve_context</span> (k=8)', d: 360 },
-    { html: '<span class="ar">→</span> assess.churn_signals() <span class="dim">· 14 flags</span>', d: 420 },
-    { html: '<span class="ar">→</span> draft.report(format=<span class="dim">exec_brief</span>)', d: 380 },
-    { html: '<span class="ok">✓</span> done <span class="dim">· 3× faster · 80% less manual effort</span>', d: 0 }
+  var traceTitle = document.getElementById("traceTitle");
+  var runs = [
+    {
+      title: "revops-intel · agent run",
+      lines: [
+        { html: '<span class="dim">$</span> <span class="kw">agent</span> run --account ACME --window 90d', d: 360 },
+        { html: '<span class="ar">→</span> ingest.sources(<span class="dim">salesforce, looker, slack</span>)', d: 360 },
+        { html: '<span class="ar">→</span> resolve.entities() <span class="dim">· 1.2k records</span>', d: 360 },
+        { html: '<span class="ar">→</span> planner.invoke(<span class="kw">churn_risk</span>) <span class="dim">· langgraph</span>', d: 380 },
+        { html: '<span class="ar">→</span> score.signals() <span class="dim">· 14 flags · 94% precision</span>', d: 380 },
+        { html: '<span class="ok">✓</span> exec_brief <span class="dim">· 3× faster · 80% less manual</span>', d: 0 }
+      ]
+    },
+    {
+      title: "automl · agent run",
+      lines: [
+        { html: '<span class="dim">$</span> <span class="kw">agent</span> train --dataset churn.csv', d: 360 },
+        { html: '<span class="ar">→</span> profile.dataset() <span class="dim">· 1.4k rows · 18 cols</span>', d: 360 },
+        { html: '<span class="ar">→</span> select.model(<span class="dim">candidates=6</span>)', d: 360 },
+        { html: '<span class="ar">→</span> pipeline.fit() <span class="dim">· deterministic · 2 llm calls</span>', d: 380 },
+        { html: '<span class="ar">→</span> evaluate() <span class="dim">· reproducible</span>', d: 380 },
+        { html: '<span class="ok">✓</span> model.pkl <span class="dim">· 0 generated code executed</span>', d: 0 }
+      ]
+    },
+    {
+      title: "hire-agent · agent run",
+      lines: [
+        { html: '<span class="dim">$</span> <span class="kw">agent</span> screen --role "ML Engineer"', d: 360 },
+        { html: '<span class="ar">→</span> parse.resumes(<span class="dim">pdf</span>) <span class="dim">· 142 applicants</span>', d: 360 },
+        { html: '<span class="ar">→</span> rank.candidates(<span class="dim">tf-idf + cosine</span>)', d: 380 },
+        { html: '<span class="ar">→</span> schedule.interviews(<span class="dim">oauth · calendar</span>)', d: 380 },
+        { html: '<span class="ok">✓</span> shortlist <span class="dim">· top 8 · 95% faster response</span>', d: 0 }
+      ]
+    }
   ];
-  function renderTrace() {
-    if (reduceMotion) {
-      trace.innerHTML = lines.map(function (l) { return '<div class="trace-line">' + l.html + '</div>'; }).join("");
+
+  function renderRunStatic(run) {
+    traceTitle.textContent = run.title;
+    trace.innerHTML = run.lines.map(function (l) { return '<div class="trace-line">' + l.html + '</div>'; }).join("");
+  }
+
+  var runIdx = 0, lineIdx = 0;
+  function typeRun() {
+    var run = runs[runIdx];
+    traceTitle.textContent = run.title;
+    if (lineIdx === 0) trace.innerHTML = "";
+    if (lineIdx >= run.lines.length) {
+      var caretLine = document.createElement("div");
+      caretLine.className = "trace-line";
+      caretLine.innerHTML = '<span class="dim">$</span> <span class="caret"></span>';
+      trace.appendChild(caretLine);
+      setTimeout(function () {
+        trace.style.transition = "opacity 320ms var(--ease-out)";
+        trace.style.opacity = "0";
+        setTimeout(function () {
+          runIdx = (runIdx + 1) % runs.length;
+          lineIdx = 0;
+          trace.style.opacity = "1";
+          typeRun();
+        }, 340);
+      }, 2800);
       return;
     }
-    var i = 0;
-    function next() {
-      if (i >= lines.length) {
-        var caretLine = document.createElement("div");
-        caretLine.className = "trace-line";
-        caretLine.innerHTML = '<span class="dim">$</span> <span class="caret"></span>';
-        trace.appendChild(caretLine);
-        return;
-      }
-      var div = document.createElement("div");
-      div.className = "trace-line";
-      div.innerHTML = lines[i].html;
-      div.style.opacity = "0";
-      div.style.transition = "opacity 240ms var(--ease-out)";
-      trace.appendChild(div);
-      requestAnimationFrame(function () { div.style.opacity = "1"; });
-      var delay = lines[i].d || 300;
-      i++;
-      setTimeout(next, delay);
-    }
-    setTimeout(next, 500);
+    var line = run.lines[lineIdx];
+    var div = document.createElement("div");
+    div.className = "trace-line";
+    div.innerHTML = line.html;
+    div.style.opacity = "0";
+    div.style.transition = "opacity 240ms var(--ease-out)";
+    trace.appendChild(div);
+    requestAnimationFrame(function () { div.style.opacity = "1"; });
+    lineIdx++;
+    setTimeout(typeRun, line.d || 300);
   }
+
+  function startTrace() {
+    if (reduceMotion) { renderRunStatic(runs[0]); return; }
+    setTimeout(typeRun, 500);
+  }
+
   if ("IntersectionObserver" in window && !reduceMotion) {
     var trObs = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) { if (e.isIntersecting) { renderTrace(); trObs.disconnect(); } });
+      entries.forEach(function (e) { if (e.isIntersecting) { startTrace(); trObs.disconnect(); } });
     }, { threshold: 0.3 });
     trObs.observe(trace);
   } else {
-    renderTrace();
+    startTrace();
   }
 })();
 </script>
