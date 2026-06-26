@@ -707,13 +707,168 @@ header.nav.scrolled {
 }
 @media (max-width: 820px) { .featured-visual { border-left: none; border-top: 1px solid var(--border); min-height: 260px; } }
 .featured-visual svg { width: 100%; height: 100%; }
-.fg-edge { stroke: var(--border-2); stroke-width: 1; fill: none; }
-.fg-edge.flow { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 7; animation: dash 1.4s linear infinite; }
-@keyframes dash { to { stroke-dashoffset: -24; } }
-.fg-node { fill: var(--surface-2); stroke: var(--border-2); stroke-width: 1; }
-.fg-node.on { stroke: var(--accent); }
-.fg-label { fill: var(--text-2); font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.04em; }
-.fg-dot { fill: var(--accent); }
+/* ---- Knock hero console (live featured visual) ---- */
+.knk-stage{
+  --kbg:#0A0B0D; --kelev:#0F1115; --ksurf:#121419; --ksurf2:#171A20;
+  --kbd:#1E2229; --kbd2:#2A2F38; --ktx:#E6E8EC; --kmut:#5E6470;
+  --kacc:#5EA9D8; --kacc-soft:rgba(94,169,216,0.12);
+  position:relative; box-sizing:border-box; min-height:430px; height:100%;
+  padding:22px 22px 18px; background:var(--kelev); border-left:1px solid var(--kbd);
+  overflow:hidden; isolation:isolate;
+}
+.knk-stage *{ box-sizing:border-box; }
+.knk-stage::before{ content:""; position:absolute; inset:0; z-index:0; pointer-events:none;
+  background:radial-gradient(120% 80% at 100% 0%, rgba(94,169,216,0.10) 0%, rgba(94,169,216,0.03) 32%, transparent 60%); }
+.knk-stage::after{ content:""; position:absolute; inset:0; z-index:0; pointer-events:none;
+  background-image:radial-gradient(rgba(255,255,255,0.022) 1px,transparent 1px); background-size:14px 14px;
+  -webkit-mask-image:linear-gradient(to bottom,transparent,#000 18%,#000 82%,transparent);
+          mask-image:linear-gradient(to bottom,transparent,#000 18%,#000 82%,transparent); }
+.knk-panel{ position:relative; z-index:1; display:flex; flex-direction:column; gap:14px; height:100%; }
+.knk-head{ display:flex; align-items:center; gap:8px; }
+.knk-dot{ width:7px; height:7px; border-radius:50%; background:var(--kacc); position:relative; }
+.knk-dot::after{ content:""; position:absolute; inset:-4px; border-radius:50%; border:1px solid var(--kacc); opacity:0; animation:knk-ping 3.4s ease-out infinite; }
+.knk-title{ font-family:var(--font-display); font-size:13px; letter-spacing:-0.01em; color:var(--ktx); font-weight:600; }
+.knk-auto{ margin-left:auto; font-family:var(--font-mono); font-size:10px; color:var(--kmut); letter-spacing:.04em; }
+.knk-auto b{ color:var(--kacc); font-weight:600; }
+.knk-zone-label{ font-family:var(--font-mono); font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--kmut); display:flex; align-items:center; gap:8px; }
+.knk-zone-label::after{ content:""; flex:1; height:1px; background:var(--kbd); }
+.knk-senders,.knk-inboxes{ display:flex; flex-direction:column; gap:6px; }
+.knk-sender,.knk-inbox{ position:relative; display:flex; align-items:center; gap:10px; padding:8px 10px; border:1px solid var(--kbd); border-radius:8px; background:var(--ksurf); }
+.knk-inbox{ transition:border-color .35s,background .35s; }
+.knk-av,.knk-ibox-ic{ width:22px; height:22px; border-radius:6px; flex:none; display:grid; place-items:center; background:var(--ksurf2); border:1px solid var(--kbd2); }
+.knk-av{ font-family:var(--font-mono); font-size:10px; color:var(--kmut); font-weight:600; }
+.knk-sname,.knk-rname{ font-size:11.5px; color:var(--ktx); font-weight:500; }
+.knk-meta{ margin-left:auto; display:flex; align-items:center; gap:8px; }
+.knk-quota{ font-family:var(--font-mono); font-size:9.5px; color:var(--kmut); letter-spacing:.02em; }
+.knk-fire{ width:6px; height:6px; border-radius:50%; background:var(--kbd2); flex:none; transition:background .3s; }
+.knk-sender.is-firing .knk-fire{ background:var(--kacc); }
+.knk-rail{ position:relative; height:30px; margin:-2px 0; }
+.knk-rail-line{ position:absolute; left:11px; right:11px; top:50%; height:1px; background:linear-gradient(90deg,transparent,var(--kbd2) 12%,var(--kbd2) 88%,transparent); }
+.knk-rail-cap{ font-family:var(--font-mono); font-size:9px; letter-spacing:.1em; color:var(--kmut); background:var(--kelev); padding:0 8px; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); white-space:nowrap; }
+.knk-rail-cap b{ color:var(--kacc); font-weight:600; }
+.knk-packet{ position:absolute; left:50%; top:50%; width:18px; height:12px; border-radius:3px; border:1px solid var(--kacc); background:var(--kacc-soft); transform:translate(-50%,-50%) scale(.6); opacity:0; }
+.knk-packet::before{ content:""; position:absolute; inset:2px 2px auto 2px; height:1px; background:var(--kacc); opacity:.6; }
+.knk-packet.is-fly{ animation:knk-fly 1100ms cubic-bezier(.4,0,.2,1) forwards; }
+.knk-packet.is-block{ animation:knk-block 900ms cubic-bezier(.34,1.56,.64,1) forwards; }
+.knk-verdict{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%) translateY(-15px); font-family:var(--font-mono); font-size:9px; letter-spacing:.04em; padding:2px 7px; border-radius:999px; opacity:0; white-space:nowrap; border:1px solid var(--kbd2); background:var(--ksurf); }
+.knk-verdict.ok{ color:var(--kacc); }
+.knk-verdict.lock{ color:var(--kmut); }
+.knk-verdict.show{ animation:knk-verdict 1100ms ease forwards; }
+.knk-inbox.is-hit{ border-color:var(--kbd2); background:var(--ksurf2); }
+.knk-ibox-ic svg{ width:12px; height:12px; stroke:var(--kmut); fill:none; stroke-width:1.4; transition:stroke .35s; }
+.knk-inbox.is-hit .knk-ibox-ic svg{ stroke:var(--kacc); }
+.knk-rcpt{ display:flex; flex-direction:column; gap:1px; min-width:0; }
+.knk-rname{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.knk-rnote{ font-family:var(--font-mono); font-size:10px; color:var(--kmut); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; height:13px; transition:color .35s; }
+.knk-inbox.is-hit .knk-rnote{ color:var(--ktx); }
+.knk-owner{ margin-left:auto; display:flex; align-items:center; gap:6px; flex:none; }
+.knk-owntag{ font-family:var(--font-mono); font-size:9px; letter-spacing:.02em; color:var(--kmut); padding:2px 6px; border-radius:5px; border:1px solid var(--kbd); background:var(--kelev); }
+.knk-inbox.is-hit .knk-owntag{ color:var(--ktx); border-color:var(--kbd2); }
+.knk-badge{ min-width:16px; height:16px; padding:0 4px; border-radius:8px; flex:none; display:grid; place-items:center; font-family:var(--font-mono); font-size:9px; font-weight:600; color:var(--kacc); background:var(--kacc-soft); border:1px solid rgba(94,169,216,0.28); transform:scale(.4); opacity:0; }
+.knk-badge.show{ animation:knk-badge 600ms cubic-bezier(.34,1.56,.64,1) forwards; }
+.knk-foot{ margin-top:auto; display:flex; align-items:center; gap:7px; font-family:var(--font-mono); font-size:9.5px; color:var(--kmut); letter-spacing:.02em; }
+.knk-foot svg{ width:11px; height:11px; stroke:var(--kacc); fill:none; stroke-width:1.4; flex:none; }
+.knk-foot b{ color:var(--ktx); font-weight:500; }
+@keyframes knk-ping{ 0%{opacity:.5;transform:scale(.6)} 70%,100%{opacity:0;transform:scale(2.1)} }
+@keyframes knk-fly{ 0%{opacity:0;transform:translate(-50%,-50%) scale(.6)} 14%{opacity:1;transform:translate(-50%,-50%) scale(1)} 100%{opacity:0;transform:translate(-50%,calc(-50% + var(--ty,80px))) scale(.7)} }
+@keyframes knk-block{ 0%{opacity:0;transform:translate(-50%,-50%) scale(.6)} 20%{opacity:1;transform:translate(-50%,-50%) scale(1)} 55%{opacity:1;transform:translate(-50%,calc(-50% + 16px)) scale(1)} 72%{transform:translate(-50%,calc(-50% + 2px)) scale(.92)} 100%{opacity:0;transform:translate(-50%,calc(-50% - 6px)) scale(.7)} }
+@keyframes knk-verdict{ 0%{opacity:0;transform:translate(-50%,-50%) translateY(-8px)} 18%,72%{opacity:1;transform:translate(-50%,-50%) translateY(-15px)} 100%{opacity:0;transform:translate(-50%,-50%) translateY(-20px)} }
+@keyframes knk-badge{ 0%{opacity:0;transform:scale(.4)} 60%{transform:scale(1.12)} 100%{opacity:1;transform:scale(1)} }
+@media (max-width:820px){ .knk-stage{ border-left:none; border-top:1px solid var(--kbd); min-height:380px; } }
+@media (prefers-reduced-motion:reduce){
+  .knk-dot::after{ animation:none; display:none; }
+  .knk-packet,.knk-verdict{ display:none; }
+  .knk-badge{ opacity:1; transform:none; animation:none; }
+  .knk-inbox{ border-color:var(--kbd2); background:var(--ksurf2); }
+  .knk-inbox .knk-ibox-ic svg{ stroke:var(--kacc); }
+  .knk-inbox .knk-rnote{ color:var(--ktx); }
+  .knk-inbox .knk-owntag{ color:var(--ktx); border-color:var(--kbd2); }
+}
+
+/* ============================================================
+   ARCHITECTURE BOARD (Knock)
+   ============================================================ */
+:root { --lock: #C08A5E; --lock-soft: rgba(192,138,94,0.10); --lock-line: rgba(192,138,94,0.34); }
+.arch-section {
+  border-top: 1px solid var(--border);
+  padding: clamp(72px, 11vh, 150px) 0;
+  position: relative;
+  z-index: 1;
+}
+.arch-wrap { max-width: 1280px; margin: 0 auto; padding: 0 var(--gutter); }
+.arch-head { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--s6); flex-wrap: wrap; margin-bottom: var(--s8); }
+.arch-head .ht h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.875rem, 3.4vw, 2.6rem);
+  font-weight: 600; letter-spacing: -0.02em; line-height: 1.08; margin-top: var(--s3);
+}
+.arch-head .ht p { color: var(--text-2); margin-top: var(--s3); max-width: 54ch; font-size: 0.9375rem; }
+.arch-legend { display: flex; flex-wrap: wrap; gap: var(--s4); }
+.leg { display: flex; align-items: center; gap: 7px; font-family: var(--font-mono); font-size: 0.6875rem; color: var(--muted); letter-spacing: 0.02em; }
+.leg .sw { width: 16px; height: 0; border-top: 2px solid var(--muted); display: inline-block; }
+.leg .sw.req { border-top-color: var(--accent); }
+.leg .sw.job { border-top-style: dashed; border-top-color: var(--border-2); }
+.leg .sw.lock { border-top-color: var(--lock); }
+
+.knock-board { display: grid; grid-template-columns: 0.82fr 0.78fr 1.05fr 1.25fr 1.1fr; gap: 14px; align-items: stretch; }
+.zone {
+  position: relative; min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.zone.spine::after {
+  content: "›";
+  position: absolute; right: -11px; top: 50%; transform: translateY(-50%);
+  color: var(--border-2); font-size: 18px; line-height: 1; z-index: 2;
+}
+.zone-label {
+  display: flex; align-items: center; gap: 7px;
+  font-family: var(--font-mono); font-size: 0.625rem; letter-spacing: 0.11em; text-transform: uppercase;
+  color: var(--muted); padding-bottom: 9px; margin-bottom: 1px; border-bottom: 1px solid var(--border);
+}
+.zone-label .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border-2); flex: none; }
+.zone-label.on .dot { background: var(--accent); }
+.node {
+  background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 6px;
+  padding: 8px 10px; font-family: var(--font-mono); font-size: 0.6875rem; color: var(--text-2); line-height: 1.35;
+}
+.node .t { display: block; color: var(--text); font-size: 0.75rem; }
+.node .s { display: block; color: var(--muted); font-size: 0.625rem; margin-top: 1px; }
+.node.accent { border-color: var(--accent-line); background: var(--accent-soft); }
+.node.accent .t { color: #cfe3f2; }
+.node.lock-node { border-color: var(--lock-line); background: var(--lock-soft); }
+.node.lock-node .t { color: #e6c5a6; }
+.group { border: 1px dashed var(--border-2); border-radius: 8px; padding: 9px; display: flex; flex-direction: column; gap: 6px; }
+.group > .gl { font-family: var(--font-mono); font-size: 0.5625rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.group.lock-group { border-color: var(--lock-line); background: rgba(192,138,94,0.04); }
+.group.lock-group > .gl { color: var(--lock); }
+.chain { font-family: var(--font-mono); font-size: 0.6875rem; color: var(--text-2); line-height: 1.5; }
+.chain .ar { color: var(--muted); }
+.phase { display: flex; gap: 8px; align-items: baseline; font-family: var(--font-mono); font-size: 0.6875rem; color: var(--text-2); line-height: 1.35; }
+.phase .n { color: var(--accent); font-weight: 600; flex: none; min-width: 16px; }
+.phase .w { color: var(--lock); }
+.idem {
+  margin-top: auto; font-family: var(--font-mono); font-size: 0.5625rem; color: var(--muted);
+  padding-top: 9px; border-top: 1px solid var(--border); line-height: 1.6; letter-spacing: 0.02em;
+}
+.flowtip { font-family: var(--font-mono); font-size: 0.5625rem; color: var(--muted); letter-spacing: 0.04em; }
+.arch-ext { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: var(--s5); }
+.arch-ext .xlabel { font-family: var(--font-mono); font-size: 0.625rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; align-self: center; margin-right: 2px; }
+.arch-ext .pill {
+  font-family: var(--font-mono); font-size: 0.6875rem; color: var(--text-2); letter-spacing: 0.02em;
+  border: 1px solid var(--border); border-radius: 100px; padding: 6px 14px; background: var(--bg-elevated);
+}
+@media (max-width: 980px) {
+  .knock-board { grid-template-columns: 1fr 1fr; }
+  .zone.spine::after { display: none; }
+}
+@media (max-width: 560px) {
+  .knock-board { grid-template-columns: 1fr; }
+  .arch-head { flex-direction: column; align-items: flex-start; }
+}
 
 /* ============================================================
    PROJECT GRID
@@ -1080,50 +1235,176 @@ footer.foot {
   <div class="content">
     <div class="featured reveal">
       <div class="featured-copy">
-        <div class="eyebrow">Flagship Project · Jan 2026</div>
-        <h3>NodeCodeML</h3>
-        <div class="tag">"Cursor for ML."</div>
-        <p>A Cursor-style ML platform where you train, evaluate, and iterate models from natural-language prompts — a dataset is the only input. The full workflow (preprocessing, model selection, training, evaluation) runs on deterministic pipelines for reproducibility and production readiness.</p>
+        <div class="eyebrow">Flagship Project · 2026</div>
+        <h3>Knock</h3>
+        <div class="tag">Cold outreach that runs itself — and never knocks twice.</div>
+        <p>A multi-user cold-outreach platform where everyone sends from their own Gmail. A <b style="color:var(--text);font-weight:600">3-tier cross-user contact lock</b> makes it architecturally impossible for two users to email the same prospect. A daily autopilot picks contacts, sends, ingests replies, and permanently opts out anyone who replies "stop".</p>
         <div class="featured-metrics">
-          <div class="fm"><div class="v">2</div><div class="k">LLM calls / run</div></div>
-          <div class="fm"><div class="v">80%+</div><div class="k">prewritten ML logic</div></div>
-          <div class="fm"><div class="v">0</div><div class="k">generated code executed</div></div>
+          <div class="fm"><div class="v">0</div><div class="k">duplicate sends · platform-wide</div></div>
+          <div class="fm"><div class="v">Daily</div><div class="k">autonomous send cycle</div></div>
+          <div class="fm"><div class="v">Solo</div><div class="k">full-stack + infra</div></div>
+        </div>
+        <div class="chips" style="margin-top:var(--s6)">
+          <span class="chip">FastAPI</span><span class="chip">Next.js 14</span><span class="chip">SQLAlchemy</span><span class="chip">Gmail API</span><span class="chip">Turso</span><span class="chip">Azure</span>
         </div>
         <div class="links">
-          <a href="https://github.com/mridulchdry17" target="_blank" rel="noopener" class="btn">GitHub <span class="arr">↗</span></a>
+          <a href="https://github.com/mridulchdry17/knock-backend" target="_blank" rel="noopener" class="btn">Backend <span class="arr">↗</span></a>
+          <a href="https://github.com/mridulchdry17/knock-frontend" target="_blank" rel="noopener" class="btn">Frontend <span class="arr">↗</span></a>
         </div>
       </div>
-      <div class="featured-visual" aria-hidden="true">
-        <svg viewBox="0 0 320 320" preserveAspectRatio="xMidYMid meet" id="graph">
-          <!-- edges -->
-          <path class="fg-edge flow" d="M160 60 L160 110" />
-          <path class="fg-edge flow" d="M160 150 L90 200" />
-          <path class="fg-edge flow" d="M160 150 L230 200" />
-          <path class="fg-edge flow" d="M90 240 L160 280" />
-          <path class="fg-edge flow" d="M230 240 L160 280" />
-          <!-- nodes -->
-          <g>
-            <rect class="fg-node on" x="118" y="36" width="84" height="28" rx="6"/>
-            <text class="fg-label" x="160" y="54" text-anchor="middle">dataset.in</text>
-          </g>
-          <g>
-            <rect class="fg-node on" x="112" y="118" width="96" height="28" rx="6"/>
-            <text class="fg-label" x="160" y="136" text-anchor="middle">preprocess</text>
-          </g>
-          <g>
-            <rect class="fg-node" x="44" y="208" width="92" height="28" rx="6"/>
-            <text class="fg-label" x="90" y="226" text-anchor="middle">select model</text>
-          </g>
-          <g>
-            <rect class="fg-node" x="184" y="208" width="92" height="28" rx="6"/>
-            <text class="fg-label" x="230" y="226" text-anchor="middle">train · eval</text>
-          </g>
-          <g>
-            <rect class="fg-node on" x="116" y="288" width="88" height="26" rx="6"/>
-            <text class="fg-label" x="160" y="305" text-anchor="middle">model.out</text>
-          </g>
-        </svg>
+      <div class="knk-stage" role="img"
+           aria-label="Knock console: students each send a few personalized cold emails; notifications land in different recruiter inboxes. A cross-user contact lock prevents two senders from ever emailing the same recruiter.">
+        <div class="knk-panel" aria-hidden="true">
+          <div class="knk-head">
+            <span class="knk-dot"></span>
+            <span class="knk-title">Knock</span>
+            <span class="knk-auto">autopilot <b>on</b> · 9:00 AM</span>
+          </div>
+
+          <div class="knk-zone-label">Senders · today</div>
+          <div class="knk-senders" id="knkSenders">
+            <div class="knk-sender" data-sender="MA">
+              <span class="knk-av">MA</span>
+              <span class="knk-sname">Maya</span>
+              <span class="knk-meta"><span class="knk-quota">3 / 5 sent</span><span class="knk-fire"></span></span>
+            </div>
+            <div class="knk-sender" data-sender="DV">
+              <span class="knk-av">DV</span>
+              <span class="knk-sname">Dev</span>
+              <span class="knk-meta"><span class="knk-quota">4 / 5 sent</span><span class="knk-fire"></span></span>
+            </div>
+            <div class="knk-sender" data-sender="PR">
+              <span class="knk-av">PR</span>
+              <span class="knk-sname">Priya</span>
+              <span class="knk-meta"><span class="knk-quota">2 / 5 sent</span><span class="knk-fire"></span></span>
+            </div>
+          </div>
+
+          <div class="knk-rail">
+            <div class="knk-rail-line"></div>
+            <div class="knk-rail-cap">contact&nbsp;lock&nbsp;·&nbsp;<b>1 recruiter : 1 sender</b></div>
+            <div class="knk-verdict ok" id="knkVerdict">claimed</div>
+            <div class="knk-packet" id="knkPacket"></div>
+          </div>
+
+          <div class="knk-zone-label">Recruiter inboxes</div>
+          <div class="knk-inboxes" id="knkInboxes">
+            <div class="knk-inbox" data-rcpt="0" data-y="40">
+              <span class="knk-ibox-ic"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>
+              <span class="knk-rcpt"><span class="knk-rname">jordan@northwind.co</span><span class="knk-rnote">no activity yet</span></span>
+              <span class="knk-owner"><span class="knk-owntag">—</span><span class="knk-badge">1</span></span>
+            </div>
+            <div class="knk-inbox" data-rcpt="1" data-y="86">
+              <span class="knk-ibox-ic"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>
+              <span class="knk-rcpt"><span class="knk-rname">sam@helio-labs.com</span><span class="knk-rnote">no activity yet</span></span>
+              <span class="knk-owner"><span class="knk-owntag">—</span><span class="knk-badge">1</span></span>
+            </div>
+            <div class="knk-inbox" data-rcpt="2" data-y="132">
+              <span class="knk-ibox-ic"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>
+              <span class="knk-rcpt"><span class="knk-rname">lee@brightpath.io</span><span class="knk-rnote">no activity yet</span></span>
+              <span class="knk-owner"><span class="knk-owntag">—</span><span class="knk-badge">1</span></span>
+            </div>
+          </div>
+
+          <div class="knk-foot">
+            <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+            <span><b>No recruiter is emailed twice.</b>&nbsp; Reply &ldquo;stop&rdquo; → permanent lock.</span>
+          </div>
+        </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ ARCHITECTURE ============================ -->
+<section class="arch-section" id="architecture">
+  <div class="arch-wrap">
+    <div class="arch-head reveal">
+      <div class="ht">
+        <span class="label"><span class="br">[</span> 02 · ARCH <span class="br">]</span> &nbsp;SYSTEM DESIGN</span>
+        <h2>Inside Knock.</h2>
+        <p>The real architecture, read from the repo: a single-box monolith with disciplined seams, an idempotent autopilot, and a cross-user lock that makes duplicate outreach a correctness invariant — not a feature.</p>
+      </div>
+      <div class="arch-legend">
+        <span class="leg"><span class="sw req"></span> request path</span>
+        <span class="leg"><span class="sw job"></span> background job</span>
+        <span class="leg"><span class="sw lock"></span> lock write-back</span>
+        <span class="leg"><span class="sw"></span> data access</span>
+      </div>
+    </div>
+
+    <div class="knock-board reveal">
+
+      <!-- Zone 1: Client -->
+      <div class="zone spine">
+        <div class="zone-label on"><span class="dot"></span> Client · Vercel</div>
+        <div class="node accent"><span class="t">Next.js 16</span><span class="s">App Router · CSR</span></div>
+        <div class="node"><span class="t">Access token</span><span class="s">memory-only</span></div>
+        <div class="node"><span class="t">RouteGuard</span><span class="s">tier × gmail matrix</span></div>
+        <div class="node"><span class="t">Domain hooks</span><span class="s">optimistic · 60s poll</span></div>
+        <div class="idem">no React Query — bespoke hooks, single-flight 401 refresh</div>
+      </div>
+
+      <!-- Zone 2: Edge & Proxy -->
+      <div class="zone spine">
+        <div class="zone-label on"><span class="dot"></span> Edge · Proxy</div>
+        <div class="node accent"><span class="t">Route Handlers</span><span class="s">×45 · same-origin</span></div>
+        <div class="node"><span class="t">Cookie scoping</span><span class="s">HttpOnly refresh</span></div>
+        <div class="node"><span class="t">Caddy</span><span class="s">:443 TLS · ACME</span></div>
+        <div class="idem">proxy holds BACKEND_URL · forwards Set-Cookie + 302s</div>
+      </div>
+
+      <!-- Zone 3: App Runtime -->
+      <div class="zone">
+        <div class="zone-label on"><span class="dot"></span> App Runtime · Azure VM</div>
+        <div class="node accent"><span class="t">FastAPI · uvicorn</span><span class="s">single proc · 127.0.0.1:8000</span></div>
+        <div class="group">
+          <span class="gl">request stack</span>
+          <div class="chain">routers <span class="ar">→</span> services <span class="ar">→</span> repositories</div>
+        </div>
+        <div class="node"><span class="t">Two-token auth</span><span class="s">bearer session · 15m</span></div>
+        <div class="node lock-node"><span class="t">Refresh rotation</span><span class="s">family reuse detection</span></div>
+        <div class="idem">CORS credentials=false · Fernet-encrypted Google tokens</div>
+      </div>
+
+      <!-- Zone 4: Autopilot -->
+      <div class="zone">
+        <div class="zone-label on"><span class="dot"></span> Autopilot · every 30 min</div>
+        <div class="node accent"><span class="t">APScheduler</span><span class="s">RUN_SCHEDULER · UTC</span></div>
+        <div class="group">
+          <span class="gl">run_cycle()</span>
+          <div class="phase"><span class="n">1</span><span>batch_generator <span class="w">▸ reads locks</span></span></div>
+          <div class="phase"><span class="n">1b</span><span>followup_planner</span></div>
+          <div class="phase"><span class="n">2</span><span>send_worker.drain <span class="w">▸ writes lock</span></span></div>
+          <div class="phase"><span class="n">3</span><span>reply_ingestor <span class="w">▸ writes lock</span></span></div>
+        </div>
+        <div class="idem">idempotent: has_batch_for_date · ready+send_time · ↻ forward-only history_id</div>
+      </div>
+
+      <!-- Zone 5: Data + Locks -->
+      <div class="zone">
+        <div class="zone-label"><span class="dot"></span> Data · Turso / libSQL</div>
+        <div class="group lock-group">
+          <span class="gl">cross-user lock</span>
+          <div class="node lock-node"><span class="t">Tier 1 · platform</span><span class="s">permanent stop</span></div>
+          <div class="node lock-node"><span class="t">Tier 2 · global</span><span class="s">36h rolling cooldown</span></div>
+          <div class="node lock-node"><span class="t">Tier 3 · per-user</span><span class="s">reply lock</span></div>
+        </div>
+        <div class="node"><span class="t">users · sessions · tokens</span></div>
+        <div class="node"><span class="t">companies <span style="color:var(--muted)">1—N</span> contacts</span></div>
+        <div class="node"><span class="t">today_batch → send_queue</span><span class="s">→ logs · failures</span></div>
+        <div class="idem">QueuePool · pool_recycle 5s · embedded read replica</div>
+      </div>
+
+    </div>
+
+    <!-- External services strip -->
+    <div class="arch-ext reveal">
+      <span class="xlabel">external</span>
+      <span class="pill">Google OAuth 2.0 · PKCE</span>
+      <span class="pill">Gmail Send API</span>
+      <span class="pill">Gmail History API</span>
+      <span class="pill">Turso libSQL cloud</span>
     </div>
   </div>
 </section>
@@ -1137,6 +1418,17 @@ footer.foot {
       <p>Agentic apps and deep-learning systems — from recruitment automation to LSTM forecasting.</p>
     </div>
     <div class="proj-grid">
+
+      <article class="card reveal">
+        <div class="card-top">
+          <h4>NodeCodeML</h4>
+          <span class="year">JAN 2026</span>
+        </div>
+        <p class="desc">"Cursor for ML" — train, evaluate, and iterate models from natural-language prompts with a dataset as the only input. Deterministic pipelines for reproducible, production-ready runs.</p>
+        <div class="card-metric">2 LLM calls / run · 80%+ prewritten logic · 0 generated code executed</div>
+        <div class="chips"><span class="chip">LangGraph</span><span class="chip">FastAPI</span><span class="chip">Scikit-learn</span><span class="chip">ChatGroq</span></div>
+        <div class="card-links"><a href="https://github.com/mridulchdry17" target="_blank" rel="noopener">GitHub ↗</a></div>
+      </article>
 
       <article class="card reveal">
         <div class="card-top">
@@ -1254,13 +1546,13 @@ footer.foot {
       <div class="reveal">
         <div class="sec-head" style="margin-bottom:var(--s5)"><h2>The short version.</h2></div>
         <p>I'm Mridul — an AI/ML engineer wrapping up a <b>BTech in AI &amp; Data Science</b> at GGSIPU, Delhi (2023–27). I've spent the degree shipping, not just studying: three AI internships building agentic systems that actually run in production.</p>
-        <p>I like problems where an agent, a good retrieval setup, or the right model turns hours of manual work into seconds — and I care about doing it <b>reliably</b>: deterministic pipelines, minimal LLM calls, nothing that executes blindly. Right now I'm building <b>NodeCodeML</b> and looking for a team that ships fast and cares about the numbers behind the work.</p>
+        <p>I like problems where an agent, a good retrieval setup, or the right model turns hours of manual work into seconds — and I care about doing it <b>reliably</b>: deterministic pipelines, minimal LLM calls, nothing that executes blindly. Right now I'm building <b>Knock</b> and looking for a team that ships fast and cares about the numbers behind the work.</p>
       </div>
       <div class="fact-list reveal">
         <div class="row"><span class="k">LOCATION</span><span class="v">Delhi, India</span></div>
         <div class="row"><span class="k">EDUCATION</span><span class="v">B.Tech AI &amp; DS<br>GGSIPU · 2023–27</span></div>
         <div class="row"><span class="k">CURRENTLY</span><span class="v"><span class="live">●</span> AI Intern @ Joveo</span></div>
-        <div class="row"><span class="k">BUILDING</span><span class="v">NodeCodeML</span></div>
+        <div class="row"><span class="k">BUILDING</span><span class="v">Knock</span></div>
         <div class="row"><span class="k">FOCUS</span><span class="v">Agentic AI · RevOps</span></div>
       </div>
     </div>
@@ -1451,14 +1743,14 @@ footer.foot {
       ]
     },
     {
-      title: "automl · agent run",
+      title: "knock · autopilot run",
       lines: [
-        { html: '<span class="dim">$</span> <span class="kw">agent</span> train --dataset churn.csv', d: 360 },
-        { html: '<span class="ar">→</span> profile.dataset() <span class="dim">· 1.4k rows · 18 cols</span>', d: 360 },
-        { html: '<span class="ar">→</span> select.model(<span class="dim">candidates=6</span>)', d: 360 },
-        { html: '<span class="ar">→</span> pipeline.fit() <span class="dim">· deterministic · 2 llm calls</span>', d: 380 },
-        { html: '<span class="ar">→</span> evaluate() <span class="dim">· reproducible</span>', d: 380 },
-        { html: '<span class="ok">✓</span> model.pkl <span class="dim">· 0 generated code executed</span>', d: 0 }
+        { html: '<span class="dim">$</span> <span class="kw">agent</span> run --user mridul --cap 20', d: 360 },
+        { html: '<span class="ar">→</span> pool.pick(today) <span class="dim">· 3-tier lock</span>', d: 360 },
+        { html: '<span class="ar">→</span> lock.acquire(contact) <span class="dim">· 0 collisions</span>', d: 380 },
+        { html: '<span class="ar">→</span> gmail.send(<span class="dim">from=self</span>) <span class="dim">· 18 sent</span>', d: 380 },
+        { html: '<span class="ar">→</span> reply.ingest() <span class="dim">· 2 stops → locked ∞</span>', d: 380 },
+        { html: '<span class="ok">✓</span> cycle done <span class="dim">· no prospect double-touched</span>', d: 0 }
       ]
     },
     {
@@ -1525,6 +1817,81 @@ footer.foot {
   } else {
     startTrace();
   }
+
+  /* ---------- Knock hero console sequencer ---------- */
+  (function () {
+    var stage = document.querySelector(".knk-stage");
+    if (!stage || reduceMotion) return;
+    var senders = [].slice.call(stage.querySelectorAll(".knk-sender"));
+    var inboxes = [].slice.call(stage.querySelectorAll(".knk-inbox"));
+    var packet = stage.querySelector("#knkPacket");
+    var verdict = stage.querySelector("#knkVerdict");
+    var notes = [
+      "Reply · re: Coffee chat?",
+      "Delivered · opened 2m ago",
+      'Reply · "happy to chat"'
+    ];
+    var owners = [null, null, null], step = 0;
+    var seq = [
+      { s: 0, r: 0, block: false },
+      { s: 1, r: 1, block: false },
+      { s: 2, r: 0, block: true },
+      { s: 2, r: 2, block: false }
+    ];
+    function reset() {
+      inboxes.forEach(function (b) {
+        b.classList.remove("is-hit");
+        b.querySelector(".knk-rnote").textContent = "no activity yet";
+        b.querySelector(".knk-owntag").textContent = "—";
+        b.querySelector(".knk-badge").classList.remove("show");
+      });
+      owners = [null, null, null];
+    }
+    function fire(ev) {
+      var sender = senders[ev.s], inbox = inboxes[ev.r], code = sender.getAttribute("data-sender");
+      sender.classList.add("is-firing");
+      setTimeout(function () { sender.classList.remove("is-firing"); }, 700);
+      verdict.classList.remove("show", "ok", "lock"); void verdict.offsetWidth;
+      packet.classList.remove("is-fly", "is-block"); void packet.offsetWidth;
+      if (ev.block) {
+        verdict.classList.add("lock");
+        verdict.textContent = "locked · owned by " + owners[ev.r];
+        verdict.classList.add("show");
+        packet.classList.add("is-block");
+      } else {
+        verdict.classList.add("ok");
+        verdict.textContent = "claimed";
+        verdict.classList.add("show");
+        var y = parseInt(inbox.getAttribute("data-y"), 10) || 80;
+        packet.style.setProperty("--ty", y + "px");
+        packet.classList.add("is-fly");
+        setTimeout(function () {
+          owners[ev.r] = code;
+          inbox.classList.add("is-hit");
+          inbox.querySelector(".knk-rnote").textContent = notes[ev.r];
+          inbox.querySelector(".knk-owntag").textContent = code;
+          var bd = inbox.querySelector(".knk-badge");
+          bd.classList.remove("show"); void bd.offsetWidth; bd.classList.add("show");
+        }, 760);
+      }
+    }
+    function tick() {
+      if (step >= seq.length) {
+        setTimeout(function () { reset(); step = 0; setTimeout(tick, 900); }, 2600);
+        return;
+      }
+      fire(seq[step]); step++;
+      setTimeout(tick, 2050);
+    }
+    if ("IntersectionObserver" in window) {
+      var io = new IntersectionObserver(function (es) {
+        es.forEach(function (e) { if (e.isIntersecting) { io.disconnect(); setTimeout(tick, 600); } });
+      }, { threshold: 0.35 });
+      io.observe(stage);
+    } else {
+      setTimeout(tick, 600);
+    }
+  })();
 })();
 </script>
 </body>
